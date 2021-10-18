@@ -1,18 +1,34 @@
-from dash import html, dcc
+from dash import html, dcc, Input, Output, dash_table
 from req.NBA import nba
 
-player_information = html.Div([
-            html.P("Please Select a Player"),
-            dcc.Dropdown(
-                id='players-dropdown',
-                # type='value',
-                options=nba.get_active_players_list_dropdown(),
-                clearable=False,
-                placeholder='select a player',
-                style=dict(width="50%")
-            ),
-            html.Button('Submit', id='submit-val', n_clicks=0),
-            html.Div(id='container-button-basic',
-                     children='Enter a value and press submit')
-        ], style=dict(padding="1%"))
+
+class PlayerInformation:
+    playerInformationContainer = html.Div([
+        html.P("Please Select a Player"),
+        dcc.Dropdown(
+            id='players-dropdown',
+            value='',
+            options=nba.get_active_players_list_dropdown(),
+            clearable=False,
+            placeholder='select a player',
+            style=dict(width="50%")
+        ),
+        html.Div(id='player-selected', style={"margin-top": "20px"})
+    ],
+
+    style=dict(padding="1%"))
+
+    def __init__(self, app):
+        @app.callback(
+            Output('player-selected', 'children'),
+            Input('players-dropdown', 'value')
+        )
+        def player_information_table(value):
+            df = nba.player_regular_season_total_stats(value)
+            print(df)
+            return dash_table.DataTable(
+                    id='table',
+                    columns=[{"name": i, "id": i} for i in df.columns],
+                    data=df.to_dict('records'),
+                ),
 

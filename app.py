@@ -1,6 +1,6 @@
 from req.NBA import nba
 from dash import Dash, dcc, html, Input, Output, State
-from tabs.player_information import player_information
+from tabs.player_information import PlayerInformation
 # import plotly.graph_objects as go
 # import plotly.express as px
 
@@ -38,21 +38,12 @@ app.layout = html.Div([
               Input('tabs-styled-with-inline', 'value'))
 def render_content(tab):
     if (tab == "player-information"):
-        @app.callback(
-            Output('container-button-basic', 'children'),
-            Input('submit-val', 'n_clicks'),
-            State('input-on-submit', 'value')
-        )
-        def print_player_name(n_clicks, value):
-            print("Hello")
-            print("clicked: {}", n_clicks)
-            print("Player: {}", value)
-        return player_information
-
+        playerInformation = PlayerInformation(app)
+        return playerInformation.playerInformationContainer
 
 
 if __name__ == '__main__':
     # development
-    app.run_server(debug=True)
+    # app.run_server(debug=True)
     # production
-    # app.run_server()
+    app.run_server()
